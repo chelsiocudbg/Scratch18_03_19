@@ -1,4 +1,4 @@
-From 91abd6818e64fe3a320188ea1c2f1cf12547f0ec Mon Sep 17 00:00:00 2001
+From 4ebe426804bf2d2ef73c6a63f9b779679ac1a778 Mon Sep 17 00:00:00 2001
 From: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
 Date: Mon, 6 Nov 2017 15:17:34 +0530
 Subject: [PATCH 2/3] cxgb4: collect cudbg debug logs during kernel crash
@@ -16,7 +16,7 @@ Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
  5 files changed, 208 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
-index 1eab8c5c..9218e24c 100644
+index 4aa431ee..9cd74371 100644
 --- a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
 +++ b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
 @@ -2118,6 +2118,14 @@ int cudbg_collect_vpd_data(struct cudbg_init *pdbg_init,
@@ -66,10 +66,10 @@ index a6a95b13..6e05f10f 100644
  
  /* Defined bit width of user definable filter tuples
 diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c
-index 591b7d94..9330b41a 100644
+index 6d880dc5..122325c6 100644
 --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c
 +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c
-@@ -366,7 +366,7 @@ static void cxgb4_cudbg_collect_entity(struct cudbg_init *pdbg_init,
+@@ -372,7 +372,7 @@ static void cxgb4_cudbg_collect_entity(struct cudbg_init *pdbg_init,
  
  		/* Skip entities that won't fit in output buffer */
  		entity_size = cxgb4_get_entity_length(adap, e->entity);

@@ -1,4 +1,4 @@
-From 6410016257b219b6e3d5fb163f988edbc91287f3 Mon Sep 17 00:00:00 2001
+From aaad036084d9d89bbee9c0353c4f48ee60e82656 Mon Sep 17 00:00:00 2001
 From: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
 Date: Thu, 23 Nov 2017 18:03:56 +0530
 Subject: [PATCH 3/3] cxgb4: speed up on-chip memory collection
@@ -82,7 +82,7 @@ index 470dc1c8..d2d40f43 100644
  			     struct cudbg_buffer *pdbg_buff,
  			     struct cudbg_buffer *pin_buff)
 diff --git a/drivers/net/ethernet/chelsio/cxgb4/cudbg_entity.h b/drivers/net/ethernet/chelsio/cxgb4/cudbg_entity.h
-index 2e71e334..2d70e637 100644
+index b57acb8d..4269d162 100644
 --- a/drivers/net/ethernet/chelsio/cxgb4/cudbg_entity.h
 +++ b/drivers/net/ethernet/chelsio/cxgb4/cudbg_entity.h
 @@ -25,6 +25,8 @@
@@ -95,7 +95,7 @@ index 2e71e334..2d70e637 100644
  
  struct cudbg_mbox_log {
 diff --git a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
-index 9218e24c..1c555318 100644
+index 9cd74371..f6fdaf15 100644
 --- a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
 +++ b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
 @@ -447,13 +447,13 @@ int cudbg_collect_fw_devlog(struct cudbg_init *pdbg_init,
@@ -169,10 +169,10 @@ index 6e05f10f..9d8e1f10 100644
  	/* Ethtool Dump */
  	struct ethtool_dump eth_dump;
 diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c
-index 9330b41a..5e45c811 100644
+index 122325c6..373139b3 100644
 --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c
 +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c
-@@ -452,13 +452,16 @@ int cxgb4_cudbg_collect(struct adapter *adap, void *buf, u32 *buf_size,
+@@ -458,13 +458,16 @@ int cxgb4_cudbg_collect(struct adapter *adap, void *buf, u32 *buf_size,
  					   buf,
  					   &total_size);
  

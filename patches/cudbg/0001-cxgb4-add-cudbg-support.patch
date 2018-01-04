@@ -1,4 +1,4 @@
-From 0461c2301a0966e59abcd347102c9d14acb86e38 Mon Sep 17 00:00:00 2001
+From 6132add5d89b94449ae3b37af82e6f4fc98d73df Mon Sep 17 00:00:00 2001
 From: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
 Date: Tue, 7 Nov 2017 19:34:38 +0530
 Subject: [PATCH 1/3] cxgb4: add cudbg support
@@ -95,10 +95,10 @@ index f78ba174..470dc1c8 100644
  	pin_buff->offset = 0;
  	pin_buff->size = 0;
 diff --git a/drivers/net/ethernet/chelsio/cxgb4/cudbg_if.h b/drivers/net/ethernet/chelsio/cxgb4/cudbg_if.h
-index e8173ae3..941f71bb 100644
+index 88e74008..e05c4060 100644
 --- a/drivers/net/ethernet/chelsio/cxgb4/cudbg_if.h
 +++ b/drivers/net/ethernet/chelsio/cxgb4/cudbg_if.h
-@@ -86,6 +86,10 @@ struct cudbg_init {
+@@ -87,6 +87,10 @@ struct cudbg_init {
  	struct adapter *adap; /* Pointer to adapter structure */
  	void *outbuf; /* Output buffer */
  	u32 outbuf_size;  /* Output buffer size */
@@ -110,7 +110,7 @@ index e8173ae3..941f71bb 100644
  
  static inline unsigned int cudbg_mbytes_to_bytes(unsigned int size)
 diff --git a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
-index ed7244b6..1eab8c5c 100644
+index ddaf87ff..4aa431ee 100644
 --- a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
 +++ b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
 @@ -23,12 +23,59 @@
@@ -795,16 +795,16 @@ index ed7244b6..1eab8c5c 100644
  }
  
  int cudbg_collect_up_cim_indirect(struct cudbg_init *pdbg_init,
-@@ -2428,7 +2465,7 @@ int cudbg_collect_up_cim_indirect(struct cudbg_init *pdbg_init,
+@@ -2438,7 +2475,7 @@ int cudbg_collect_up_cim_indirect(struct cudbg_init *pdbg_init,
+ 		return CUDBG_STATUS_NOT_IMPLEMENTED;
  
- 	n = sizeof(t5_up_cim_reg_array) / (IREG_NUM_ELEM * sizeof(u32));
  	size = sizeof(struct ireg_buf) * n;
 -	rc = cudbg_get_buff(dbg_buff, size, &temp_buff);
 +	rc = cudbg_get_buff(pdbg_init, dbg_buff, size, &temp_buff);
  	if (rc)
  		return rc;
  
-@@ -2461,8 +2498,7 @@ int cudbg_collect_up_cim_indirect(struct cudbg_init *pdbg_init,
+@@ -2494,8 +2531,7 @@ int cudbg_collect_up_cim_indirect(struct cudbg_init *pdbg_init,
  		}
  		up_cim++;
  	}
@@ -814,7 +814,7 @@ index ed7244b6..1eab8c5c 100644
  }
  
  int cudbg_collect_pbt_tables(struct cudbg_init *pdbg_init,
-@@ -2475,7 +2511,7 @@ int cudbg_collect_pbt_tables(struct cudbg_init *pdbg_init,
+@@ -2508,7 +2544,7 @@ int cudbg_collect_pbt_tables(struct cudbg_init *pdbg_init,
  	int i, rc;
  	u32 addr;
  
@@ -823,7 +823,7 @@ index ed7244b6..1eab8c5c 100644
  			    &temp_buff);
  	if (rc)
  		return rc;
-@@ -2529,8 +2565,7 @@ int cudbg_collect_pbt_tables(struct cudbg_init *pdbg_init,
+@@ -2562,8 +2598,7 @@ int cudbg_collect_pbt_tables(struct cudbg_init *pdbg_init,
  			return rc;
  		}
  	}
@@ -833,7 +833,7 @@ index ed7244b6..1eab8c5c 100644
  }
  
  int cudbg_collect_mbox_log(struct cudbg_init *pdbg_init,
-@@ -2551,7 +2586,7 @@ int cudbg_collect_mbox_log(struct cudbg_init *pdbg_init,
+@@ -2584,7 +2619,7 @@ int cudbg_collect_mbox_log(struct cudbg_init *pdbg_init,
  	log = padap->mbox_log;
  	mbox_cmds = padap->mbox_log->size;
  	size = sizeof(struct cudbg_mbox_log) * mbox_cmds;
@@ -842,7 +842,7 @@ index ed7244b6..1eab8c5c 100644
  	if (rc)
  		return rc;
  
-@@ -2574,8 +2609,7 @@ int cudbg_collect_mbox_log(struct cudbg_init *pdbg_init,
+@@ -2607,8 +2642,7 @@ int cudbg_collect_mbox_log(struct cudbg_init *pdbg_init,
  		}
  		mboxlog++;
  	}
@@ -852,7 +852,7 @@ index ed7244b6..1eab8c5c 100644
  }
  
  int cudbg_collect_hma_indirect(struct cudbg_init *pdbg_init,
-@@ -2593,7 +2627,7 @@ int cudbg_collect_hma_indirect(struct cudbg_init *pdbg_init,
+@@ -2626,7 +2660,7 @@ int cudbg_collect_hma_indirect(struct cudbg_init *pdbg_init,
  
  	n = sizeof(t6_hma_ireg_array) / (IREG_NUM_ELEM * sizeof(u32));
  	size = sizeof(struct ireg_buf) * n;
@@ -861,7 +861,7 @@ index ed7244b6..1eab8c5c 100644
  	if (rc)
  		return rc;
  
-@@ -2611,6 +2645,5 @@ int cudbg_collect_hma_indirect(struct cudbg_init *pdbg_init,
+@@ -2644,6 +2678,5 @@ int cudbg_collect_hma_indirect(struct cudbg_init *pdbg_init,
  				 hma_fli->ireg_local_offset);
  		hma_indr++;
  	}
@@ -896,7 +896,7 @@ index 24b33f28..9c31885d 100644
 +			struct cudbg_buffer *pout_buff);
  #endif /* __CUDBG_LIB_COMMON_H__ */
 diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c
-index 581d628f..591b7d94 100644
+index a2d6c8a6..6d880dc5 100644
 --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c
 +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c
 @@ -18,6 +18,7 @@
@@ -930,7 +930,7 @@ index 581d628f..591b7d94 100644
  static u32 cxgb4_get_entity_length(struct adapter *adap, u32 entity)
  {
  	struct cudbg_tcam tcam_region = { 0 };
-@@ -338,23 +355,30 @@ static void cxgb4_cudbg_collect_entity(struct cudbg_init *pdbg_init,
+@@ -344,23 +361,30 @@ static void cxgb4_cudbg_collect_entity(struct cudbg_init *pdbg_init,
  	struct adapter *adap = pdbg_init->adap;
  	struct cudbg_error cudbg_err = { 0 };
  	struct cudbg_entity_hdr *entity_hdr;
@@ -962,7 +962,7 @@ index 581d628f..591b7d94 100644
  		ret = e->collect_cb(pdbg_init, dbg_buff, &cudbg_err);
  		if (ret) {
  			entity_hdr->size = 0;
-@@ -363,6 +387,11 @@ static void cxgb4_cudbg_collect_entity(struct cudbg_init *pdbg_init,
+@@ -369,6 +393,11 @@ static void cxgb4_cudbg_collect_entity(struct cudbg_init *pdbg_init,
  			cudbg_align_debug_buffer(dbg_buff, entity_hdr);
  		}
  
@@ -974,7 +974,7 @@ index 581d628f..591b7d94 100644
  		/* Log error and continue with next entity */
  		if (cudbg_err.sys_err)
  			ret = CUDBG_SYSTEM_ERROR;
-@@ -371,6 +400,7 @@ static void cxgb4_cudbg_collect_entity(struct cudbg_init *pdbg_init,
+@@ -377,6 +406,7 @@ static void cxgb4_cudbg_collect_entity(struct cudbg_init *pdbg_init,
  		entity_hdr->sys_err = cudbg_err.sys_err;
  		entity_hdr->sys_warn = cudbg_err.sys_warn;
  		total_size += entity_hdr->size;
@@ -982,7 +982,7 @@ index 581d628f..591b7d94 100644
  	}
  
  	*tot_size += total_size;
-@@ -403,6 +433,7 @@ int cxgb4_cudbg_collect(struct adapter *adap, void *buf, u32 *buf_size,
+@@ -409,6 +439,7 @@ int cxgb4_cudbg_collect(struct adapter *adap, void *buf, u32 *buf_size,
  	cudbg_hdr->chip_ver = adap->params.chip;
  	cudbg_hdr->dump_type = CUDBG_DUMP_TYPE_MINI;
  	cudbg_hdr->compress_type = CUDBG_COMPRESSION_NONE;
@@ -990,7 +990,7 @@ index 581d628f..591b7d94 100644
  
  	min_size = sizeof(struct cudbg_hdr) +
  		   sizeof(struct cudbg_entity_hdr) *
-@@ -412,6 +443,7 @@ int cxgb4_cudbg_collect(struct adapter *adap, void *buf, u32 *buf_size,
+@@ -418,6 +449,7 @@ int cxgb4_cudbg_collect(struct adapter *adap, void *buf, u32 *buf_size,
  
  	dbg_buff.offset += min_size;
  	total_size = dbg_buff.offset;
@@ -998,7 +998,7 @@ index 581d628f..591b7d94 100644
  
  	if (flag & CXGB4_ETH_DUMP_HW)
  		cxgb4_cudbg_collect_entity(&cudbg_init, &dbg_buff,
-@@ -427,7 +459,6 @@ int cxgb4_cudbg_collect(struct adapter *adap, void *buf, u32 *buf_size,
+@@ -433,7 +465,6 @@ int cxgb4_cudbg_collect(struct adapter *adap, void *buf, u32 *buf_size,
  					   buf,
  					   &total_size);
  
@@ -1006,7 +1006,7 @@ index 581d628f..591b7d94 100644
  	*buf_size = total_size;
  	return 0;
  }
-@@ -438,3 +469,73 @@ void cxgb4_init_ethtool_dump(struct adapter *adapter)
+@@ -444,3 +475,73 @@ void cxgb4_init_ethtool_dump(struct adapter *adapter)
  	adapter->eth_dump.version = adapter->params.fw_vers;
  	adapter->eth_dump.len = 0;
  }
